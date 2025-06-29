@@ -48,7 +48,7 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
             </div>
 
             <div className="flex gap-4 items-center">
-                {/* Zoom Controls */}
+                {/* ZOOM CONTROLS */}
                 <div className="flex gap-2">
                     <button
                         className="px-2 py-1 rounded bg-gray-200 text-sm hover:bg-gray-300 shadow-sm"
@@ -181,8 +181,6 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
 
 
                                         console.log("Fixed nodes:", fixedNodes);
-
-                                        // setNodes(fixedNodes);
                                         const replaceBackendNodes = async (newNodes: MapNode[]) => {
                                             try {
                                                 // Delete everything in the backend first

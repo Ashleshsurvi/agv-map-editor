@@ -1,4 +1,3 @@
-// src/components/__tests__/HeaderControls.test.tsx
 import { render, screen } from '@testing-library/react';
 import HeaderControls from '../HeaderControls';
 import type { MapNode } from '../../types/types';

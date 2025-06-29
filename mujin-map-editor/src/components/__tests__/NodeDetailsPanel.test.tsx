@@ -1,4 +1,3 @@
-// src/components/__tests__/NodeDetailsPanel.test.tsx
 import { render, screen } from '@testing-library/react';
 import NodeDetailsPanel from '../NodeDetailsPanel';
 import type { MapNode } from '../../types/types';
