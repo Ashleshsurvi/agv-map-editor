@@ -107,6 +107,7 @@ Frontend container: Node & Vite build
 Backend container: Django server
 
 
+
 Docker Pull Instructions
 
 Backend Image:
@@ -116,6 +117,14 @@ docker run -d -p 8000:8000 ashleshsurvi/agv-backend:latest
 Frontend Image:
 docker pull ashleshsurvi/agv-frontend:latest
 docker run -d -p 4173:4173 ashleshsurvi/agv-frontend:latest
+
+Docker Stop Instructions
+ docker ps (will get container id)
+ Backend Image: docker stop "backend container id"
+ Frontend Image: docker stop "frontend container id"
+
+
+
 
 
 Exposes ports 4173 (frontend) and 8000 (backend)
