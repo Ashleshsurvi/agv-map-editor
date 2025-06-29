@@ -106,6 +106,7 @@ The docker-compose.yml sets up:
 Frontend container: Node & Vite build
 Backend container: Django server
 
+Exposes ports 4173 (frontend) and 8000 (backend)
 
 
 Docker Pull Instructions
@@ -124,10 +125,6 @@ Docker Stop Instructions
  Frontend Image: docker stop "frontend container id"
 
 
-
-
-
-Exposes ports 4173 (frontend) and 8000 (backend)
 
 Tips
 
