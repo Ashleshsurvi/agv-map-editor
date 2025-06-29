@@ -1,0 +1,30 @@
+# Use Debian as base
+FROM debian:bullseye
+
+# Install Node.js
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean
+
+# Create app directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the code
+COPY . .
+
+# Build the frontend
+RUN npm run build
+
+# Expose port (for preview if you want)
+EXPOSE 4173
+
+# Command to preview the build (optional)
+CMD ["npx", "vite", "preview", "--host"]
