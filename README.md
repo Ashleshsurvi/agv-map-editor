@@ -104,9 +104,18 @@ Docker Compose Overview
 
 The docker-compose.yml sets up:
 Frontend container: Node & Vite build
-
-
 Backend container: Django server
+
+
+Docker Pull Instructions
+
+Backend Image:
+docker pull ashleshsurvi/agv-backend:latest
+docker run -d -p 8000:8000 ashleshsurvi/agv-backend:latest
+
+Frontend Image:
+docker pull ashleshsurvi/agv-frontend:latest
+docker run -d -p 4173:4173 ashleshsurvi/agv-frontend:latest
 
 
 Exposes ports 4173 (frontend) and 8000 (backend)
