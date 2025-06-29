@@ -4,6 +4,9 @@ import MapCanvas from "./components/MapCanvas";
 import type { MapNode } from "./types/types";
 import NodeDetailsPanel from "./components/NodeDetailsPanel";
 import HeaderControls from "./components/HeaderControls";
+import { snapNodePosition } from "./utils/snapUtils";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function App() {
   const [selectedNode, setSelectedNode] = useState<MapNode | null>(null);
@@ -14,7 +17,7 @@ function App() {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-  fetch("http://127.0.0.1:8000/api/NodeList/")
+  fetch(`${API_BASE_URL}/api/NodeList/`)
     .then((res) => res.json())
     .then((data) => {
       setSavedNodes(data);
@@ -46,12 +49,21 @@ function App() {
 
         <MapCanvas nodes={nodes} onSelectNode={(node) => setSelectedNode({ ...node })}
           onMoveNode={(code, newX, newY) => {
-            setNodes((prev) =>
-              prev.map((n) =>
-                n.code === code ? { ...n, x: newX, y: newY } : n
-              )
-            );
-          }}
+    const movedNode = { 
+      code,
+      x: newX,
+      y: newY,
+      directions: [],
+    };
+
+    const snapped = snapNodePosition(movedNode, nodes.filter(n => n.code !== code));
+
+    setNodes((prev) =>
+      prev.map((n) =>
+        n.code === code ? { ...n, x: snapped.x, y: snapped.y } : n
+      )
+    );
+  }}
           zoom={zoom}
           offset={offset} />
       </div>
@@ -67,8 +79,8 @@ function App() {
             const isNew = !selectedNode.id;
 
             const url = isNew
-              ? "http://127.0.0.1:8000/api/NodeList/"
-              : `http://127.0.0.1:8000/api/NodeUpdate/${selectedNode.id}/`;
+              ? `${API_BASE_URL}/api/NodeList/`
+              : `${API_BASE_URL}/api/NodeUpdate/${selectedNode.id}/`;
 
             const method = isNew ? "POST" : "PUT";
             console.log("Saving node:", selectedNode);
@@ -89,7 +101,7 @@ function App() {
               })
               .then(() => {
                 // Re-fetch the updated list
-                return fetch("http://127.0.0.1:8000/api/NodeList/").then((r) => r.json());
+                return fetch(`${API_BASE_URL}/api/NodeList/`).then((r) => r.json());
               })
               .then((data) => {
                 setNodes(data);
@@ -104,7 +116,7 @@ function App() {
           onDelete={() => {
   if (!selectedNode) return;
 
-  fetch(`http://127.0.0.1:8000/api/NodeDelete/${selectedNode.code}/`, {
+  fetch(`${API_BASE_URL}/api/NodeDelete/${selectedNode.code}/`, {
     method: "DELETE",
   })
     .then(async (res) => {
@@ -117,7 +129,7 @@ function App() {
     })
     .then(() => {
       // Re-fetch updated list
-      return fetch("http://127.0.0.1:8000/api/NodeList/").then((r) => r.json());
+      return fetch(`${API_BASE_URL}/api/NodeList/`).then((r) => r.json());
     })
     .then((data) => {
       setNodes(data);

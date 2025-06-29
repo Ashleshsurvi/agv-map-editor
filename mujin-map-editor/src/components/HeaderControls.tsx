@@ -1,5 +1,9 @@
 import React from "react";
 import type { MapNode } from "../types/types";
+import { snapNodePosition } from "../utils/snapUtils";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 interface HeaderControlsProps {
     nodes: MapNode[];
     savedNodes: MapNode[];
@@ -33,14 +37,24 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
                 <button
                     className="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700 shadow"
                     onClick={() => {
-                        const newNode: MapNode = {
+                        const unsnapped: MapNode = {
                             x: 500,
                             y: 500,
                             code: generateUniqueCode(nodes, savedNodes),
                             directions: [],
                         };
-                        setNodes((prev) => [...prev, newNode]);
-                        setSelectedNode(newNode);
+                        const snapped = snapNodePosition(unsnapped, nodes);
+
+                        console.log("Snapped node:", snapped);
+                        const snappedNode: MapNode = {
+  ...unsnapped,
+  x: snapped.x,
+  y: snapped.y,
+};
+
+setNodes((prev) => [...prev, snappedNode]);
+setSelectedNode(snappedNode);
+
                     }}
                 >
                     + Add Node
@@ -184,11 +198,11 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
                                         const replaceBackendNodes = async (newNodes: MapNode[]) => {
                                             try {
                                                 // Delete everything in the backend first
-                                                await fetch("http://127.0.0.1:8000/api/NodeClear/", { method: "DELETE" });
+                                                await fetch(`${API_BASE_URL}/api/NodeClear/`, { method: "DELETE" });
                                                 console.log("Cleared backend nodes.");
 
                                                 // Bulk insert new nodes
-                                                const res = await fetch("http://127.0.0.1:8000/api/NodeBulkImport/", {
+                                                const res = await fetch(`${API_BASE_URL}/api/NodeBulkImport/`, {
                                                     method: "POST",
                                                     headers: { "Content-Type": "application/json" },
                                                     body: JSON.stringify(newNodes),
@@ -211,7 +225,7 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
                                         // First save them in backend
                                         replaceBackendNodes(fixedNodes).then(() => {
                                             // Then re-fetch from backend so you get IDs
-                                            fetch("http://127.0.0.1:8000/api/NodeList/")
+                                            fetch(`${API_BASE_URL}/api/NodeList/`)
                                                 .then((res) => res.json())
                                                 .then((data) => {
                                                     setNodes(data);
@@ -244,7 +258,7 @@ const HeaderControls: React.FC<HeaderControlsProps> = ({
                                 setSelectedNode(null);
 
                                 // Clear backend
-                                fetch("http://127.0.0.1:8000/api/NodeClear/", { method: "DELETE" })
+                                fetch(`${API_BASE_URL}/api/NodeClear/`, { method: "DELETE" })
                                     .then((res) => {
                                         if (!res.ok) {
                                             throw new Error(`Server error: ${res.status}`);
